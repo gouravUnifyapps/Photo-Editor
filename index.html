@@ -348,8 +348,6 @@
 
             topImageX = mouseX - dragStartX;
             topImageY = mouseY - dragStartY;
-
-            drawComposite();
         });
 
         // Mouse up - stop dragging
@@ -358,6 +356,7 @@
                 isDragging = false;
                 canvas.classList.remove('dragging');
             }
+            drawComposite();
         });
 
         // Touch support
@@ -395,11 +394,11 @@
             topImageX = touchX - dragStartX;
             topImageY = touchY - dragStartY;
 
-            drawComposite();
         });
 
         document.addEventListener('touchend', () => {
             isDragging = false;
+            drawComposite()
         });
 
         // Download composite
