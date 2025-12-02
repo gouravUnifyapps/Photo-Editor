@@ -244,6 +244,20 @@
             loadingMessage.style.display = 'none';
         }
 
+        // Send composite image to parent via postMessage
+        function sendCompositeToParent() {
+            if (!baseImage || !topImage) return;
+            
+            const base64Image = canvas.toDataURL('image/png');
+            
+            // Send to parent window
+            window.parent.postMessage({
+                type: 'composite-image',
+                data: base64Image,
+                timestamp: Date.now()
+            }, '*');
+        }
+
         function initializePosition() {
             if (baseImage && topImage) {
                 // Position at top-right corner
@@ -296,6 +310,8 @@
             // Resize canvas to fit container
             canvas.style.width = '100%';
             canvas.style.height = '100%';
+
+            sendCompositeToParent();
         }
 
         // Mouse down - start dragging
@@ -362,6 +378,7 @@
                 dragStartX = touchX - topImageX;
                 dragStartY = touchY - topImageY;
             }
+
         });
 
         document.addEventListener('touchmove', (e) => {
