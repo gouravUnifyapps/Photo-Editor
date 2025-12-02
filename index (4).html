@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Overlay Editor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: transparent;
+            overflow: hidden;
+            width: 100%;
+            height: 100vh;
+        }
+        
+        canvas {
+            display: block;
+            cursor: move;
+            background: transparent;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="editor"></canvas>
+    
+    <script>
+        const canvas = document.getElementById('editor');
+        const ctx = canvas.getContext('2d');
+        
+        // Get URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const baseImageUrl = params.get('image1');
+        const overlayImageUrl = params.get('image2');
+        
+        let baseImage = null;
+        let overlayImage = null;
+        let overlayX = 0;
+        let overlayY = 0;
+        let isDragging = false;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+        
+        // Load images
+        function loadImages() {
+            baseImage = new Image();
+            baseImage.crossOrigin = 'anonymous';
+            baseImage.onload = () => {
+                canvas.width = baseImage.width;
+                canvas.height = baseImage.height;
+                
+                overlayImage = new Image();
+                overlayImage.crossOrigin = 'anonymous';
+                overlayImage.onload = () => {
+                    overlayX = canvas.width - overlayImage.width;
+                    overlayY = 0;
+                    draw();
+                };
+                overlayImage.src = overlayImageUrl;
+            };
+            baseImage.src = baseImageUrl;
+        }
+        
+        // Draw function
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw base image
+            ctx.drawImage(baseImage, 0, 0);
+            
+            // Draw overlay image
+            if (overlayImage && overlayImage.complete) {
+                ctx.drawImage(overlayImage, overlayX, overlayY);
+            }
+        }
+        
+        // Mouse down - check if clicking on overlay
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            if (overlayImage && overlayImage.complete &&
+                x >= overlayX && x <= overlayX + overlayImage.width &&
+                y >= overlayY && y <= overlayY + overlayImage.height) {
+                isDragging = true;
+                dragOffsetX = x - overlayX;
+                dragOffsetY = y - overlayY;
+            }
+        });
+        
+        // Mouse move - drag overlay
+        canvas.addEventListener('mousemove', (e) => {
+            if (isDragging && overlayImage) {
+                const rect = canvas.getBoundingClientRect();
+                overlayX = e.clientX - rect.left - dragOffsetX;
+                overlayY = e.clientY - rect.top - dragOffsetY;
+                draw();
+            }
+        });
+        
+        // Mouse up - stop dragging
+        canvas.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+            isDragging = false;
+        });
+        
+        // Touch support for mobile
+        canvas.addEventListener('touchstart', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+            
+            if (overlayImage && overlayImage.complete &&
+                x >= overlayX && x <= overlayX + overlayImage.width &&
+                y >= overlayY && y <= overlayY + overlayImage.height) {
+                isDragging = true;
+                dragOffsetX = x - overlayX;
+                dragOffsetY = y - overlayY;
+            }
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            if (isDragging && overlayImage) {
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                overlayX = touch.clientX - rect.left - dragOffsetX;
+                overlayY = touch.clientY - rect.top - dragOffsetY;
+                draw();
+            }
+        });
+        
+        canvas.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+        
+        // Initialize
+        loadImages();
+        
+        // Redraw on window resize
+        window.addEventListener('resize', () => {
+            if (baseImage && baseImage.complete) {
+                canvas.width = baseImage.width;
+                canvas.height = baseImage.height;
+                draw();
+            }
+        });
+    </script>
+</body>
+</html>
