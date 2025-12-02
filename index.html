@@ -244,6 +244,14 @@
             loadingMessage.style.display = 'none';
         }
 
+        function initializePosition() {
+            if (baseImage && topImage) {
+                // Position at top-right corner
+                topImageX = baseImage.width - topImage.width;
+                topImageY = 0;
+            }
+        }
+
         // Load image with CORS proxy if needed
         function loadImage(url) {
             return new Promise((resolve, reject) => {
@@ -410,6 +418,7 @@
                 downloadBtn.disabled = false;
                 resetBtn.disabled = false;
 
+                initializePosition();
                 drawComposite();
             } catch (error) {
                 showError(`❌ ${error.message}`);
