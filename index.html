@@ -216,8 +216,8 @@
     <script>
         const canvas = document.getElementById('compositeCanvas');
         const ctx = canvas.getContext('2d');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const resetBtn = document.getElementById('resetBtn');
+        // const downloadBtn = document.getElementById('downloadBtn');
+        // const resetBtn = document.getElementById('resetBtn');
         const errorMessage = document.getElementById('errorMessage');
         const loadingMessage = document.getElementById('loadingMessage');
 
@@ -404,19 +404,19 @@
         });
 
         // Download composite
-        downloadBtn.addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png');
-            link.download = 'composite-image.png';
-            link.click();
-        });
+        // downloadBtn.addEventListener('click', () => {
+        //     const link = document.createElement('a');
+        //     link.href = canvas.toDataURL('image/png');
+        //     link.download = 'composite-image.png';
+        //     link.click();
+        // });
 
-        // Reset position
-        resetBtn.addEventListener('click', () => {
-            topImageX = 0;
-            topImageY = 0;
-            drawComposite();
-        });
+        // // Reset position
+        // resetBtn.addEventListener('click', () => {
+        //     topImageX = 0;
+        //     topImageY = 0;
+        //     drawComposite();
+        // });
 
         // Initialize
         async function init() {
@@ -433,8 +433,8 @@
 
                 loadingMessage.style.display = 'none';
                 canvas.style.display = 'block';
-                downloadBtn.disabled = false;
-                resetBtn.disabled = false;
+                // downloadBtn.disabled = false;
+                // resetBtn.disabled = false;
 
                 initializePosition();
                 drawComposite();
